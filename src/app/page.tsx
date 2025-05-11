@@ -2369,6 +2369,266 @@ export default function Home() {
     );
   };
 
+  // JavaScript playground with terminal for testing code
+  const [showJsPlayground, setShowJsPlayground] = useState(false);
+  const [playgroundCode, setPlaygroundCode] = useState(
+    `// Node.js Playground
+// Write your JavaScript code here and click Run
+// Example:
+console.log("Hello, world!");
+
+// Working with arrays
+const numbers = [1, 2, 3, 4, 5];
+console.log("Original array:", numbers);
+console.log("Doubled:", numbers.map(n => n * 2));
+
+// Working with objects
+const person = {
+  name: "Alice",
+  age: 30,
+  greet() {
+    return \`Hello, my name is \${this.name}!\`;
+  }
+};
+console.log(person.greet());
+
+// Async operation example
+setTimeout(() => {
+  console.log("This message appears after 1 second");
+}, 1000);
+`
+  );
+  const [terminalOutput, setTerminalOutput] = useState<Array<{type: string, content: string}>>([]);
+  const [isRunning, setIsRunning] = useState(false);
+  const playgroundEditorRef = useRef(null);
+  const terminalRef = useRef<HTMLDivElement>(null);
+
+  const runJsPlayground = () => {
+    setIsRunning(true);
+    setTerminalOutput([]);
+    
+    // Create a virtual console to capture logs
+    const virtualConsole = {
+      log: (...args: any[]) => {
+        const content = args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' ');
+        setTerminalOutput(prev => [...prev, { type: 'log', content }]);
+      },
+      error: (...args: any[]) => {
+        const content = args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' ');
+        setTerminalOutput(prev => [...prev, { type: 'error', content }]);
+      },
+      warn: (...args: any[]) => {
+        const content = args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' ');
+        setTerminalOutput(prev => [...prev, { type: 'warn', content }]);
+      },
+      info: (...args: any[]) => {
+        const content = args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' ');
+        setTerminalOutput(prev => [...prev, { type: 'info', content }]);
+      }
+    };
+
+    try {
+      // Basic Node.js environment simulation
+      const context = {
+        console: virtualConsole,
+        setTimeout: window.setTimeout,
+        clearTimeout: window.clearTimeout,
+        setInterval: window.setInterval,
+        clearInterval: window.clearInterval,
+        process: {
+          env: { NODE_ENV: 'development' },
+          version: 'v16.13.0 (simulated)',
+          platform: window.navigator.platform.toLowerCase().includes('win') ? 'win32' : 'posix',
+          cwd: () => '/'
+        },
+        require: (moduleName: string) => {
+          // Simple module simulation
+          switch(moduleName) {
+            case 'fs':
+              return {
+                readFileSync: (path: string) => `[Simulated] Content of ${path}`,
+                writeFileSync: (path: string, data: string) => {
+                  virtualConsole.log(`[Simulated] Wrote to ${path}`);
+                }
+              };
+            case 'path':
+              return {
+                join: (...parts: string[]) => parts.join('/'),
+                resolve: (...parts: string[]) => parts.join('/'),
+                basename: (path: string) => path.split('/').pop()
+              };
+            default:
+              virtualConsole.warn(`Module '${moduleName}' is not available in playground mode`);
+              return {};
+          }
+        }
+      };
+
+      // Function constructor to run code with simulated context
+      const runCode = new Function(
+        ...Object.keys(context),
+        `
+        try {
+          ${playgroundCode}
+        } catch (error) {
+          console.error("Runtime error:", error.message);
+        }
+        `
+      );
+
+      // Execute the code with the simulated context
+      runCode(...Object.values(context));
+      
+      // Add a completion message with timestamp
+      const timestamp = new Date().toLocaleTimeString();
+      virtualConsole.info(`Code execution completed at ${timestamp}`);
+    } catch (error) {
+      setTerminalOutput(prev => [...prev, { 
+        type: 'error', 
+        content: `Compilation error: ${error.message}` 
+      }]);
+    } finally {
+      setIsRunning(false);
+      
+      // Scroll terminal to bottom
+      if (terminalRef.current) {
+        setTimeout(() => {
+          if (terminalRef.current) {
+            terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+          }
+        }, 100);
+      }
+    }
+  };
+
+  const clearTerminal = () => {
+    setTerminalOutput([]);
+  };
+
+  const renderJsPlayground = () => {
+    if (!showJsPlayground) return null;
+    
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col bg-background border shadow-lg">
+        <div className="flex items-center justify-between border-b p-2">
+          <div className="flex items-center gap-2">
+            <Terminal className="h-5 w-5 text-blue-500" />
+            <h2 className="text-lg font-semibold">Node.js Playground</h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5"
+              onClick={clearTerminal}
+            >
+              <RefreshCcw className="h-3.5 w-3.5" />
+              Clear Terminal
+            </Button>
+            <Button
+              size="sm"
+              variant="default"
+              className="gap-1.5"
+              onClick={runJsPlayground}
+              disabled={isRunning}
+            >
+              <Play className="h-3.5 w-3.5" />
+              Run
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowJsPlayground(false)}
+              className="h-8 w-8"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+          <div className="w-full md:w-1/2 h-full overflow-hidden border-b md:border-b-0 md:border-r">
+            <div className="h-full">
+              <MonacoEditor
+                height="100%"
+                language="javascript"
+                value={playgroundCode}
+                onChange={setPlaygroundCode}
+                theme={theme === 'dark' ? 'vs-dark' : 'light'}
+                onMount={(editor) => playgroundEditorRef.current = editor}
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 14,
+                  wordWrap: 'on',
+                  scrollBeyondLastLine: false,
+                  automaticLayout: true,
+                  padding: { top: 10, bottom: 10 },
+                  suggestOnTriggerCharacters: true,
+                  folding: true,
+                  tabCompletion: 'on',
+                  renderLineHighlight: 'all',
+                  scrollbar: {
+                    verticalScrollbarSize: 10,
+                    horizontalScrollbarSize: 10
+                  }
+                }}
+              />
+            </div>
+          </div>
+          
+          <div className="w-full md:w-1/2 h-1/2 md:h-full flex flex-col">
+            <div className="p-2 bg-black text-gray-200 font-bold border-b flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Terminal className="h-4 w-4" />
+                <span>Terminal</span>
+              </div>
+              <span className="text-xs text-gray-400">Simulated Node.js v16.13.0</span>
+            </div>
+            <div 
+              ref={terminalRef}
+              className="flex-1 bg-black p-2 font-mono text-sm overflow-auto"
+              style={{ maxHeight: 'calc(100% - 36px)' }}
+            >
+              <div className="text-gray-200 mb-2">
+                <span className="text-green-400">$</span> node playground.js
+              </div>
+              {terminalOutput.length === 0 ? (
+                <div className="text-gray-500 italic">Run your code to see output here...</div>
+              ) : (
+                terminalOutput.map((msg, i) => (
+                  <div 
+                    key={i} 
+                    className={`py-0.5 whitespace-pre-wrap ${
+                      msg.type === 'error' ? 'text-red-400' : 
+                      msg.type === 'warn' ? 'text-yellow-400' : 
+                      msg.type === 'info' ? 'text-blue-400' : 'text-gray-200'
+                    }`}
+                  >
+                    {msg.content}
+                  </div>
+                ))
+              )}
+              {isRunning && (
+                <div className="flex items-center gap-2 text-gray-400 mt-2">
+                  <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse"></div>
+                  Running...
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <main className="h-screen w-full flex flex-col overflow-hidden bg-background">
       <header className="border-b p-1.5 md:p-2 flex flex-wrap justify-between items-center gap-1 sticky top-0 z-10 bg-background shadow-sm">
@@ -2409,6 +2669,10 @@ export default function Home() {
                     Run
                   </DropdownMenuItem>
                 )}
+                <DropdownMenuItem onClick={() => setShowJsPlayground(true)}>
+                  <Terminal className="h-4 w-4 mr-2 text-blue-500" />
+                  Node.js Playground
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={resetToDefault}>
                   <RefreshCcw className="h-4 w-4 mr-2" />
                   Reset
@@ -2467,6 +2731,15 @@ export default function Home() {
                 Run
               </Button>
             )}
+            <Button 
+              variant="outline" 
+              onClick={() => setShowJsPlayground(true)}
+              size="sm"
+              className="gap-1 h-8 px-2"
+            >
+              <Terminal className="h-3.5 w-3.5 text-blue-500" />
+              Node.js
+            </Button>
             <Button 
               variant="outline" 
               onClick={resetToDefault}
@@ -3173,6 +3446,19 @@ export default function Home() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {renderJsPlayground()}
+      {!dataLoaded && (
+        <div className="fixed inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-card p-6 rounded-lg shadow-lg text-center max-w-sm border">
+            <div className="mb-4">
+              <div className="h-12 w-12 rounded-full border-2 border-primary border-t-transparent animate-spin mx-auto"></div>
+            </div>
+            <h2 className="text-xl font-semibold mb-2">Loading editor...</h2>
+            <p className="text-muted-foreground">Please wait while we load your files</p>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
