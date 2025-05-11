@@ -1687,26 +1687,26 @@ export default function Home() {
   };
 
   return (
-    <main className="h-screen w-full flex flex-col overflow-hidden">
-      <header className="border-b p-2 flex flex-wrap justify-between items-center gap-2">
-        <div className="flex items-center gap-2">
+    <main className="h-screen w-full flex flex-col overflow-hidden bg-background">
+      <header className="border-b p-1.5 md:p-2 flex flex-wrap justify-between items-center gap-1 sticky top-0 z-10 bg-background shadow-sm">
+        <div className="flex items-center gap-1.5">
           <Button 
             variant="ghost" 
             size="icon" 
-            className="md:hidden"
+            className="md:hidden h-8 w-8"
             onClick={() => setMobileFileExplorerOpen(true)}
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-4 w-4" />
           </Button>
           <Button 
             variant="ghost" 
             size="icon" 
-            className="hidden md:flex"
+            className="hidden md:flex h-8 w-8"
             onClick={toggleFileExplorer}
           >
-            <PanelLeft className="h-5 w-5" />
+            <PanelLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-lg font-bold truncate max-w-[150px] sm:max-w-[250px] md:max-w-full">
+          <h1 className="text-base md:text-lg font-bold truncate max-w-[150px] sm:max-w-[250px] md:max-w-full">
             {activeFile ? activeFile.name : 'HTML Editor'}
           </h1>
         </div>
@@ -1715,7 +1715,7 @@ export default function Home() {
           <div className="md:hidden">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="h-8 px-2">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -1778,9 +1778,9 @@ export default function Home() {
                 variant="outline" 
                 onClick={runActiveFile}
                 size="sm"
-                className="gap-1"
+                className="gap-1 h-8 px-2"
               >
-                <Play className="h-3 w-3 text-green-500" />
+                <Play className="h-3.5 w-3.5 text-green-500" />
                 Run
               </Button>
             )}
@@ -1788,39 +1788,39 @@ export default function Home() {
               variant="outline" 
               onClick={resetToDefault}
               size="sm"
-              className="gap-1"
+              className="gap-1 h-8 px-2"
             >
-              <RefreshCcw className="h-3 w-3" />
+              <RefreshCcw className="h-3.5 w-3.5" />
               Reset
             </Button>
             <Button 
               variant="outline" 
               onClick={copyToClipboard}
               size="sm"
-              className="gap-1"
+              className="gap-1 h-8 px-2"
               disabled={!activeFile}
             >
-              <Copy className="h-3 w-3" />
+              <Copy className="h-3.5 w-3.5" />
               {copySuccess ? 'Copied!' : 'Copy'}
             </Button>
             <Button 
               variant="outline"
               onClick={downloadActiveFile}
               size="sm"
-              className="gap-1"
+              className="gap-1 h-8 px-2"
               disabled={!activeFile}
             >
-              <Download className="h-3 w-3" />
-              Save File
+              <Download className="h-3.5 w-3.5" />
+              Save
             </Button>
             <Button 
               variant="outline"
               onClick={downloadFullProject}
               size="sm"
-              className="gap-1"
+              className="gap-1 h-8 px-2"
             >
-              <Save className="h-3 w-3" />
-              Export All
+              <Save className="h-3.5 w-3.5" />
+              Export
             </Button>
             
             <Separator orientation="vertical" className="mx-1 h-6" />
@@ -1829,10 +1829,10 @@ export default function Home() {
               variant={autoUpdate ? "default" : "outline"}
               onClick={() => setAutoUpdate(!autoUpdate)}
               size="sm"
-              className="gap-1"
+              className="gap-1 h-8 px-2"
               title={autoUpdate ? "Auto update preview is ON" : "Auto update preview is OFF"}
             >
-              <RefreshCcw className="h-3 w-3" />
+              <RefreshCcw className="h-3.5 w-3.5" />
               {autoUpdate ? "Live" : "Manual"}
             </Button>
             
@@ -1840,17 +1840,17 @@ export default function Home() {
               variant="outline"
               onClick={togglePreview}
               size="sm"
-              className="gap-1"
+              className="gap-1 h-8 px-2"
             >
               {showPreview ? (
                 <>
-                  <EyeOff className="h-3 w-3" />
-                  Hide Preview
+                  <EyeOff className="h-3.5 w-3.5" />
+                  Hide
                 </>
               ) : (
                 <>
-                  <Eye className="h-3 w-3" />
-                  Show Preview
+                  <Eye className="h-3.5 w-3.5" />
+                  Show
                 </>
               )}
             </Button>
@@ -1859,10 +1859,10 @@ export default function Home() {
               variant={showDevTools ? "default" : "outline"}
               onClick={() => setShowDevTools(!showDevTools)}
               size="sm"
-              className="gap-1"
+              className="gap-1 h-8 px-2"
             >
-              <Bug className="h-3 w-3" />
-              Dev Tools
+              <Bug className="h-3.5 w-3.5" />
+              Dev
             </Button>
           </div>
           
@@ -1876,7 +1876,7 @@ export default function Home() {
                   onClick={() => changePreviewLayout('side')}
                   title="Side-by-side layout"
                 >
-                  <LayoutTemplate className="h-3 w-3" />
+                  <LayoutTemplate className="h-3.5 w-3.5" />
                 </Button>
                 <Button
                   variant={previewLayout === 'bottom' ? "default" : "outline"}
@@ -1885,7 +1885,7 @@ export default function Home() {
                   onClick={() => changePreviewLayout('bottom')}
                   title="Editor over preview"
                 >
-                  <div className="h-3 w-3 flex flex-col items-center justify-center">
+                  <div className="h-3.5 w-3.5 flex flex-col items-center justify-center">
                     <div className="w-full h-1/2 border-b border-current" />
                   </div>
                 </Button>
@@ -1899,7 +1899,7 @@ export default function Home() {
                   onClick={() => changePreviewDeviceMode('desktop')}
                   title="Desktop preview"
                 >
-                  <Monitor className="h-3 w-3" />
+                  <Monitor className="h-3.5 w-3.5" />
                 </Button>
                 <Button
                   variant={previewDeviceMode === 'tablet' ? "default" : "outline"}
@@ -1908,7 +1908,7 @@ export default function Home() {
                   onClick={() => changePreviewDeviceMode('tablet')}
                   title="Tablet preview"
                 >
-                  <Tablet className="h-3 w-3" />
+                  <Tablet className="h-3.5 w-3.5" />
                 </Button>
                 <Button
                   variant={previewDeviceMode === 'mobile' ? "default" : "outline"}
@@ -1917,7 +1917,7 @@ export default function Home() {
                   onClick={() => changePreviewDeviceMode('mobile')}
                   title="Mobile preview"
                 >
-                  <Smartphone className="h-3 w-3" />
+                  <Smartphone className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </div>
@@ -1928,7 +1928,7 @@ export default function Home() {
       </header>
       
       <div className={cn(
-        "fixed inset-0 z-50 bg-background border-r transition-transform md:hidden",
+        "fixed inset-0 z-50 bg-background border-r transition-transform md:hidden pt-[44px]",
         mobileFileExplorerOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {renderFileExplorer()}
@@ -1947,47 +1947,68 @@ export default function Home() {
               defaultSize={showFileExplorer ? (showPreview ? 40 : 80) : (showPreview ? 50 : 100)} 
               minSize={20}
             >
-              <Card className="h-full border-0 rounded-none">
-                <CardContent className="p-0 h-full overflow-hidden">
-                  {activeFile ? (
-                    <MonacoEditor
-                      height="100%"
-                      language={getLanguageFromFileType(activeFile.type)}
-                      value={activeFile.content}
-                      theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                      onChange={updateFileContent}
-                      onMount={handleEditorDidMount}
-                      options={{
-                        minimap: { enabled: window.innerWidth > 768 },
-                        fontSize: window.innerWidth > 768 ? 14 : 12,
-                        wordWrap: 'on',
-                        scrollBeyondLastLine: false,
-                        automaticLayout: true,
-                      }}
-                    />
-                  ) : (
-                    <div className="h-full flex items-center justify-center text-muted-foreground">
-                      <p>No file selected. Open or create a file to start editing.</p>
+              <div className="h-full border-0 rounded-none relative overflow-hidden">
+                {activeFile ? (
+                  <MonacoEditor
+                    height="100%"
+                    language={getLanguageFromFileType(activeFile.type)}
+                    value={activeFile.content}
+                    theme={theme === 'dark' ? 'vs-dark' : 'light'}
+                    onChange={updateFileContent}
+                    onMount={handleEditorDidMount}
+                    options={{
+                      minimap: { enabled: window.innerWidth > 768 },
+                      fontSize: window.innerWidth > 768 ? 14 : 12,
+                      wordWrap: 'on',
+                      scrollBeyondLastLine: false,
+                      automaticLayout: true,
+                      padding: { top: 10, bottom: 10 },
+                      folding: true,
+                      lineNumbers: 'on',
+                      renderLineHighlight: 'all',
+                      scrollbar: {
+                        verticalScrollbarSize: 10,
+                        horizontalScrollbarSize: 10
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className="h-full flex items-center justify-center text-muted-foreground p-4">
+                    <div className="text-center max-w-md">
+                      <Code className="h-12 w-12 mx-auto mb-4 text-primary/60" />
+                      <h2 className="text-xl font-semibold mb-2">No file selected</h2>
+                      <p>Create a new file or select an existing one to start editing.</p>
+                      <Button 
+                        className="mt-4" 
+                        onClick={() => {
+                          setNewItemParentId(null);
+                          setNewItemType('file');
+                          setIsNewItemDialogOpen(true);
+                        }}
+                      >
+                        <FilePlus className="h-4 w-4 mr-2" />
+                        Create New File
+                      </Button>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+                  </div>
+                )}
+              </div>
             </ResizablePanel>
             
             {showPreview && (
               <ResizablePanel defaultSize={showFileExplorer ? 40 : 50} minSize={20}>
-                <Card className={`h-full border-0 rounded-none ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
-                  <CardHeader className="py-2 px-2 md:px-4 flex flex-row justify-between items-center">
-                    <CardTitle className="text-sm flex items-center gap-2">
-                      <Eye className="h-4 w-4" />
+                <div className={`h-full border-0 rounded-none relative ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
+                  <div className="absolute top-0 right-0 left-0 py-1 px-2 flex flex-row justify-between items-center bg-card border-b z-10">
+                    <div className="text-sm flex items-center gap-2 font-medium">
+                      <Eye className="h-3.5 w-3.5 text-muted-foreground" />
                       Preview
-                    </CardTitle>
-                    <div className="flex gap-1">
-                      <div className="flex md:hidden items-center gap-1">
+                    </div>
+                    <div className="flex gap-0.5">
+                      <div className="flex md:hidden items-center gap-0.5">
                         <Button
                           variant={previewDeviceMode === 'desktop' ? "default" : "outline"}
                           size="icon"
-                          className="h-7 w-7"
+                          className="h-6 w-6"
                           onClick={() => changePreviewDeviceMode('desktop')}
                           title="Desktop preview"
                         >
@@ -1996,7 +2017,7 @@ export default function Home() {
                         <Button
                           variant={previewDeviceMode === 'tablet' ? "default" : "outline"}
                           size="icon"
-                          className="h-7 w-7"
+                          className="h-6 w-6"
                           onClick={() => changePreviewDeviceMode('tablet')}
                           title="Tablet preview"
                         >
@@ -2005,25 +2026,25 @@ export default function Home() {
                         <Button
                           variant={previewDeviceMode === 'mobile' ? "default" : "outline"}
                           size="icon"
-                          className="h-7 w-7"
+                          className="h-6 w-6"
                           onClick={() => changePreviewDeviceMode('mobile')}
                           title="Mobile preview"
                         >
                           <Smartphone className="h-3 w-3" />
                         </Button>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="h-8 w-8">
-                        {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+                      <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="h-6 w-6">
+                        {isFullscreen ? <Minimize className="h-3.5 w-3.5" /> : <Maximize className="h-3.5 w-3.5" />}
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={openInNewTab} className="h-8 w-8">
-                        <ExternalLink className="h-4 w-4" />
+                      <Button variant="ghost" size="icon" onClick={openInNewTab} className="h-6 w-6">
+                        <ExternalLink className="h-3.5 w-3.5" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={togglePreview} className="h-8 w-8">
-                        <EyeOff className="h-4 w-4" />
+                      <Button variant="ghost" size="icon" onClick={togglePreview} className="h-6 w-6">
+                        <EyeOff className="h-3.5 w-3.5" />
                       </Button>
                     </div>
-                  </CardHeader>
-                  <CardContent className="p-0 h-[calc(100%-3rem)] bg-white">
+                  </div>
+                  <div className="p-0 pt-8 h-full bg-white">
                     <div className={cn(
                       "w-full h-full overflow-auto",
                       previewDeviceMode === 'tablet' && "flex justify-center p-4",
@@ -2041,8 +2062,8 @@ export default function Home() {
                         ref={previewRef}
                       />
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </ResizablePanel>
             )}
           </ResizablePanelGroup>
@@ -2057,31 +2078,52 @@ export default function Home() {
                   </ResizablePanel>
                   
                   <ResizablePanel defaultSize={80}>
-                    <Card className="h-full border-0 rounded-none">
-                      <CardContent className="p-0 h-full overflow-hidden">
-                        {activeFile ? (
-                          <MonacoEditor
-                            height="100%"
-                            language={getLanguageFromFileType(activeFile.type)}
-                            value={activeFile.content}
-                            theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                            onChange={updateFileContent}
-                            onMount={handleEditorDidMount}
-                            options={{
-                              minimap: { enabled: window.innerWidth > 768 },
-                              fontSize: window.innerWidth > 768 ? 14 : 12,
-                              wordWrap: 'on',
-                              scrollBeyondLastLine: false,
-                              automaticLayout: true,
-                            }}
-                          />
-                        ) : (
-                          <div className="h-full flex items-center justify-center text-muted-foreground">
-                            <p>No file selected. Open or create a file to start editing.</p>
+                    <div className="h-full border-0 rounded-none relative overflow-hidden">
+                      {activeFile ? (
+                        <MonacoEditor
+                          height="100%"
+                          language={getLanguageFromFileType(activeFile.type)}
+                          value={activeFile.content}
+                          theme={theme === 'dark' ? 'vs-dark' : 'light'}
+                          onChange={updateFileContent}
+                          onMount={handleEditorDidMount}
+                          options={{
+                            minimap: { enabled: window.innerWidth > 768 },
+                            fontSize: window.innerWidth > 768 ? 14 : 12,
+                            wordWrap: 'on',
+                            scrollBeyondLastLine: false,
+                            automaticLayout: true,
+                            padding: { top: 10, bottom: 10 },
+                            folding: true,
+                            lineNumbers: 'on',
+                            renderLineHighlight: 'all',
+                            scrollbar: {
+                              verticalScrollbarSize: 10,
+                              horizontalScrollbarSize: 10
+                            }
+                          }}
+                        />
+                      ) : (
+                        <div className="h-full flex items-center justify-center text-muted-foreground p-4">
+                          <div className="text-center max-w-md">
+                            <Code className="h-12 w-12 mx-auto mb-4 text-primary/60" />
+                            <h2 className="text-xl font-semibold mb-2">No file selected</h2>
+                            <p>Create a new file or select an existing one to start editing.</p>
+                            <Button 
+                              className="mt-4" 
+                              onClick={() => {
+                                setNewItemParentId(null);
+                                setNewItemType('file');
+                                setIsNewItemDialogOpen(true);
+                              }}
+                            >
+                              <FilePlus className="h-4 w-4 mr-2" />
+                              Create New File
+                            </Button>
                           </div>
-                        )}
-                      </CardContent>
-                    </Card>
+                        </div>
+                      )}
+                    </div>
                   </ResizablePanel>
                 </ResizablePanelGroup>
               </div>
@@ -2089,47 +2131,68 @@ export default function Home() {
             
             {!showFileExplorer && (
               <ResizablePanel defaultSize={50} minSize={20}>
-                <Card className="h-full border-0 rounded-none">
-                  <CardContent className="p-0 h-full overflow-hidden">
-                    {activeFile ? (
-                      <MonacoEditor
-                        height="100%"
-                        language={getLanguageFromFileType(activeFile.type)}
-                        value={activeFile.content}
-                        theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                        onChange={updateFileContent}
-                        onMount={handleEditorDidMount}
-                        options={{
-                          minimap: { enabled: window.innerWidth > 768 },
-                          fontSize: window.innerWidth > 768 ? 14 : 12,
-                          wordWrap: 'on',
-                          scrollBeyondLastLine: false,
-                          automaticLayout: true,
-                        }}
-                      />
-                    ) : (
-                      <div className="h-full flex items-center justify-center text-muted-foreground">
-                        <p>No file selected. Open or create a file to start editing.</p>
+                <div className="h-full border-0 rounded-none relative overflow-hidden">
+                  {activeFile ? (
+                    <MonacoEditor
+                      height="100%"
+                      language={getLanguageFromFileType(activeFile.type)}
+                      value={activeFile.content}
+                      theme={theme === 'dark' ? 'vs-dark' : 'light'}
+                      onChange={updateFileContent}
+                      onMount={handleEditorDidMount}
+                      options={{
+                        minimap: { enabled: window.innerWidth > 768 },
+                        fontSize: window.innerWidth > 768 ? 14 : 12,
+                        wordWrap: 'on',
+                        scrollBeyondLastLine: false,
+                        automaticLayout: true,
+                        padding: { top: 10, bottom: 10 },
+                        folding: true,
+                        lineNumbers: 'on',
+                        renderLineHighlight: 'all',
+                        scrollbar: {
+                          verticalScrollbarSize: 10,
+                          horizontalScrollbarSize: 10
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-muted-foreground p-4">
+                      <div className="text-center max-w-md">
+                        <Code className="h-12 w-12 mx-auto mb-4 text-primary/60" />
+                        <h2 className="text-xl font-semibold mb-2">No file selected</h2>
+                        <p>Create a new file or select an existing one to start editing.</p>
+                        <Button 
+                          className="mt-4" 
+                          onClick={() => {
+                            setNewItemParentId(null);
+                            setNewItemType('file');
+                            setIsNewItemDialogOpen(true);
+                          }}
+                        >
+                          <FilePlus className="h-4 w-4 mr-2" />
+                          Create New File
+                        </Button>
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
+                    </div>
+                  )}
+                </div>
               </ResizablePanel>
             )}
             
             <ResizablePanel defaultSize={50} minSize={20}>
-              <Card className={`h-full border-0 rounded-none ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
-                <CardHeader className="py-2 px-2 md:px-4 flex flex-row justify-between items-center">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <Eye className="h-4 w-4" />
+              <div className={`h-full border-0 rounded-none relative ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
+                <div className="absolute top-0 right-0 left-0 py-1 px-2 flex flex-row justify-between items-center bg-card border-b z-10">
+                  <div className="text-sm flex items-center gap-2 font-medium">
+                    <Eye className="h-3.5 w-3.5 text-muted-foreground" />
                     Preview
-                  </CardTitle>
-                  <div className="flex gap-1">
-                    <div className="flex md:hidden items-center gap-1">
+                  </div>
+                  <div className="flex gap-0.5">
+                    <div className="flex md:hidden items-center gap-0.5">
                       <Button
                         variant={previewDeviceMode === 'desktop' ? "default" : "outline"}
                         size="icon"
-                        className="h-7 w-7"
+                        className="h-6 w-6"
                         onClick={() => changePreviewDeviceMode('desktop')}
                         title="Desktop preview"
                       >
@@ -2138,7 +2201,7 @@ export default function Home() {
                       <Button
                         variant={previewDeviceMode === 'tablet' ? "default" : "outline"}
                         size="icon"
-                        className="h-7 w-7"
+                        className="h-6 w-6"
                         onClick={() => changePreviewDeviceMode('tablet')}
                         title="Tablet preview"
                       >
@@ -2147,25 +2210,25 @@ export default function Home() {
                       <Button
                         variant={previewDeviceMode === 'mobile' ? "default" : "outline"}
                         size="icon"
-                        className="h-7 w-7"
+                        className="h-6 w-6"
                         onClick={() => changePreviewDeviceMode('mobile')}
                         title="Mobile preview"
                       >
                         <Smartphone className="h-3 w-3" />
                       </Button>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="h-8 w-8">
-                      {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+                    <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="h-6 w-6">
+                      {isFullscreen ? <Minimize className="h-3.5 w-3.5" /> : <Maximize className="h-3.5 w-3.5" />}
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={openInNewTab} className="h-8 w-8">
-                      <ExternalLink className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" onClick={openInNewTab} className="h-6 w-6">
+                      <ExternalLink className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={togglePreview} className="h-8 w-8">
-                      <EyeOff className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" onClick={togglePreview} className="h-6 w-6">
+                      <EyeOff className="h-3.5 w-3.5" />
                     </Button>
                   </div>
-                </CardHeader>
-                <CardContent className="p-0 h-[calc(100%-3rem)] bg-white">
+                </div>
+                <div className="p-0 pt-8 h-full bg-white">
                   <div className={cn(
                     "w-full h-full overflow-auto",
                     previewDeviceMode === 'tablet' && "flex justify-center p-4",
@@ -2183,8 +2246,8 @@ export default function Home() {
                       ref={previewRef}
                     />
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </ResizablePanel>
           </ResizablePanelGroup>
         )}
@@ -2193,8 +2256,11 @@ export default function Home() {
       {renderDevTools()}
       
       {!dataLoaded && (
-        <div className="fixed inset-0 bg-background/80 flex items-center justify-center z-50">
-          <div className="text-center">
+        <div className="fixed inset-0 bg-background/90 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-card p-6 rounded-lg shadow-lg text-center max-w-sm border">
+            <div className="mb-4">
+              <div className="h-12 w-12 rounded-full border-2 border-primary border-t-transparent animate-spin mx-auto"></div>
+            </div>
             <h2 className="text-xl font-semibold mb-2">Loading editor...</h2>
             <p className="text-muted-foreground">Please wait while we load your files</p>
           </div>
@@ -2248,6 +2314,7 @@ export default function Home() {
                 onChange={(e) => setNewItemName(e.target.value)}
                 className="col-span-3"
                 placeholder={newItemType === 'file' ? `filename.${newFileType}` : 'folder name'}
+                autoFocus
               />
             </div>
           </div>
@@ -2278,6 +2345,7 @@ export default function Home() {
                 onChange={(e) => setNewItemName(e.target.value)}
                 className="col-span-3"
                 placeholder={itemToRename?.isFolder ? 'folder name' : 'filename'}
+                autoFocus
               />
             </div>
           </div>
@@ -2292,7 +2360,7 @@ export default function Home() {
         </DialogContent>
       </Dialog>
       
-      <div className="md:hidden h-[calc(100%-6rem)] w-full">
+      <div className="md:hidden h-[calc(100%-44px)] w-full">
         <Tabs defaultValue="editor" className="w-full h-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="editor" className="flex items-center gap-2">
@@ -2311,11 +2379,8 @@ export default function Home() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="editor" className="h-[calc(100%-2.5rem)] mt-2">
-            <Card className="h-full">
-              <CardHeader className="py-2">
-                <CardTitle className="text-sm">HTML Editor</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 h-[calc(100%-3rem)]">
+            <div className="h-full">
+              <div className="p-0 h-full overflow-hidden">
                 {activeFile ? (
                   <MonacoEditor
                     height="100%"
@@ -2330,25 +2395,42 @@ export default function Home() {
                       wordWrap: 'on',
                       scrollBeyondLastLine: false,
                       automaticLayout: true,
+                      padding: { top: 10, bottom: 10 },
                     }}
                   />
                 ) : (
-                  <div className="h-full flex items-center justify-center text-muted-foreground">
-                    <p>No file selected. Open or create a file to start editing.</p>
+                  <div className="h-full flex items-center justify-center text-muted-foreground p-4">
+                    <div className="text-center max-w-md">
+                      <Code className="h-10 w-10 mx-auto mb-3 text-primary/60" />
+                      <h2 className="text-lg font-semibold mb-2">No file selected</h2>
+                      <p className="text-sm">Create a new file or select an existing one to start editing.</p>
+                      <Button 
+                        className="mt-3 text-sm" 
+                        size="sm"
+                        onClick={() => {
+                          setNewItemParentId(null);
+                          setNewItemType('file');
+                          setIsNewItemDialogOpen(true);
+                        }}
+                      >
+                        <FilePlus className="h-3.5 w-3.5 mr-1.5" />
+                        Create New File
+                      </Button>
+                    </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </TabsContent>
           <TabsContent value="preview" className="h-[calc(100%-2.5rem)] mt-2">
-            <Card className="h-full">
-              <CardHeader className="py-2 flex flex-row justify-between items-center">
-                <CardTitle className="text-sm">Preview</CardTitle>
-                <div className="flex items-center gap-1">
+            <div className="h-full">
+              <div className="py-1 px-2 flex flex-row justify-between items-center border-b">
+                <div className="text-sm font-medium">Preview</div>
+                <div className="flex items-center gap-0.5">
                   <Button
                     variant={previewDeviceMode === 'desktop' ? 'default' : 'outline'}
                     size="icon"
-                    className="h-7 w-7"
+                    className="h-6 w-6"
                     onClick={() => changePreviewDeviceMode('desktop')}
                     title="Desktop preview"
                   >
@@ -2357,7 +2439,7 @@ export default function Home() {
                   <Button
                     variant={previewDeviceMode === 'tablet' ? 'default' : 'outline'}
                     size="icon"
-                    className="h-7 w-7"
+                    className="h-6 w-6"
                     onClick={() => changePreviewDeviceMode('tablet')}
                     title="Tablet preview"
                   >
@@ -2366,21 +2448,18 @@ export default function Home() {
                   <Button
                     variant={previewDeviceMode === 'mobile' ? 'default' : 'outline'}
                     size="icon"
-                    className="h-7 w-7"
+                    className="h-6 w-6"
                     onClick={() => changePreviewDeviceMode('mobile')}
                     title="Mobile preview"
                   >
                     <Smartphone className="h-3 w-3" />
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={openInNewTab} className="h-8 w-8">
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={togglePreview} className="h-8 w-8">
-                    <EyeOff className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" onClick={openInNewTab} className="h-6 w-6">
+                    <ExternalLink className="h-3.5 w-3.5" />
                   </Button>
                 </div>
-              </CardHeader>
-              <CardContent className="p-0 h-[calc(100%-3rem)] bg-white">
+              </div>
+              <div className="p-0 h-[calc(100%-36px)] bg-white">
                 <div className={cn(
                   "w-full h-full overflow-auto",
                   previewDeviceMode === 'tablet' && "flex justify-center p-4",
@@ -2398,18 +2477,15 @@ export default function Home() {
                     ref={previewRef}
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </TabsContent>
           <TabsContent value="files" className="h-[calc(100%-2.5rem)] mt-2">
-            <Card className="h-full">
-              <CardHeader className="py-2">
-                <CardTitle className="text-sm">Files</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 h-[calc(100%-3rem)]">
+            <div className="h-full">
+              <div className="p-0 h-full">
                 {renderFileExplorer()}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
