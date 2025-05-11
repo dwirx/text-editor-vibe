@@ -12,7 +12,7 @@ import {
   Upload, FolderPlus, FilePlus, Save, Trash2, ChevronRight, ChevronDown, 
   Menu, X, PanelLeft, LayoutTemplate, EyeOff, Smartphone, Tablet, Monitor,
   Edit, MoreHorizontal, Folder, Play, MoveHorizontal, MoreVertical, Terminal,
-  Bug, Info, Layers, Cpu, Activity, Grid
+  Bug, Info, Layers, Cpu, Activity, Grid, Clipboard
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -570,6 +570,57 @@ export default function Home() {
   // Clear console messages
   const clearConsole = () => {
     setConsoleMessages([]);
+  };
+
+  // Clear active file content
+  const clearCode = () => {
+    if (!activeFile) return;
+    
+    if (confirm("Apakah Anda yakin ingin menghapus semua isi kode?")) {
+      setFiles(prev => prev.map(file => 
+        file.id === activeFileId ? { ...file, content: '' } : file
+      ));
+      
+      if (autoUpdate) {
+        updatePreview();
+      }
+    }
+  };
+
+  // Select all text in the editor
+  const selectAllText = () => {
+    if (!editorRef.current || !activeFile) return;
+    
+    const editor = editorRef.current;
+    const model = editor.getModel();
+    if (model) {
+      const lastLineNumber = model.getLineCount();
+      const lastLineLength = model.getLineMaxColumn(lastLineNumber);
+      
+      editor.setSelection({
+        startLineNumber: 1,
+        startColumn: 1,
+        endLineNumber: lastLineNumber,
+        endColumn: lastLineLength
+      });
+      editor.focus();
+    }
+  };
+
+  // Delete selected text in the editor
+  const deleteSelectedText = () => {
+    if (!editorRef.current || !activeFile) return;
+    
+    const editor = editorRef.current;
+    const selection = editor.getSelection();
+    
+    if (selection && !selection.isEmpty()) {
+      editor.executeEdits('delete-selection', [{
+        range: selection,
+        text: '',
+      }]);
+      editor.focus();
+    }
   };
 
   // Generate HTML with console capture
@@ -1346,6 +1397,26 @@ export default function Home() {
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
       console.error('Failed to copy', err);
+    }
+  };
+
+  const pasteFromClipboard = async () => {
+    if (!activeFile) return;
+    
+    try {
+      const text = await navigator.clipboard.readText();
+      
+      // Update the file content
+      setFiles(prev => prev.map(file => 
+        file.id === activeFileId ? { ...file, content: text } : file
+      ));
+      
+      // If auto-update is enabled, update the preview immediately
+      if (autoUpdate) {
+        updatePreview();
+      }
+    } catch (err) {
+      console.error('Failed to paste', err);
     }
   };
 
@@ -2685,6 +2756,14 @@ setTimeout(() => {
                       <Copy className="h-4 w-4 mr-2" />
                       {copySuccess ? 'Copied!' : 'Copy'}
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={pasteFromClipboard}>
+                      <Clipboard className="h-4 w-4 mr-2" />
+                      Paste
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={clearCode}>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Clear Code
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={downloadActiveFile}>
                       <Download className="h-4 w-4 mr-2" />
                       Save File
@@ -2760,6 +2839,26 @@ setTimeout(() => {
             >
               <Copy className="h-3.5 w-3.5" />
               {copySuccess ? 'Copied!' : 'Copy'}
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={pasteFromClipboard}
+              size="sm"
+              className="gap-1 h-8 px-2"
+              disabled={!activeFile}
+            >
+              <Clipboard className="h-3.5 w-3.5" />
+              Paste
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={clearCode}
+              size="sm"
+              className="gap-1 h-8 px-2"
+              disabled={!activeFile}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Clear
             </Button>
             <Button 
               variant="outline"
@@ -3337,9 +3436,61 @@ setTimeout(() => {
               Files
             </TabsTrigger>
           </TabsList>
+          {/* Mengatur tinggi TabsContent mobile agar memperhitungkan tampilan toolbar baru */}
           <TabsContent value="editor" className="h-[calc(100%-2.5rem)] mt-2">
             <div className="h-full">
-              <div className="p-0 h-full overflow-hidden">
+              <div className="border-b py-1 px-2 flex justify-between items-center bg-card">
+                <div className="text-sm font-medium flex items-center gap-2">
+                  <Code className="h-3.5 w-3.5 text-muted-foreground" />
+                  Editor
+                </div>
+                {activeFile && (
+                  <div className="flex items-center gap-1">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={selectAllText} 
+                      className="h-6 w-6" 
+                      title="Select All"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 1H4a2 2 0 0 0-2 2v5"></path>
+                        <path d="M9 23h5a2 2 0 0 0 2-2v-5"></path>
+                        <path d="M23 9V4a2 2 0 0 0-2-2h-5"></path>
+                        <path d="M1 9v5a2 2 0 0 0 2 2h5"></path>
+                      </svg>
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={deleteSelectedText} 
+                      className="h-6 w-6" 
+                      title="Delete Selection"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={pasteFromClipboard} 
+                      className="h-6 w-6" 
+                      title="Paste from Clipboard"
+                    >
+                      <Clipboard className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={clearCode} 
+                      className="h-6 w-6"
+                      title="Clear All"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+              <div className="p-0 h-[calc(100%-36px)] overflow-hidden">
                 {activeFile ? (
                   <MonacoEditor
                     height="100%"
@@ -3355,6 +3506,26 @@ setTimeout(() => {
                       scrollBeyondLastLine: false,
                       automaticLayout: true,
                       padding: { top: 10, bottom: 10 },
+                      // Mobile-friendly options
+                      lineNumbers: 'on',
+                      folding: true,
+                      glyphMargin: false,
+                      lineDecorationsWidth: 0,
+                      lineNumbersMinChars: 2,
+                      renderWhitespace: 'none',
+                      scrollbar: {
+                        vertical: 'visible',
+                        horizontal: 'visible',
+                        verticalScrollbarSize: 6,
+                        horizontalScrollbarSize: 6
+                      },
+                      // Improve text selection on mobile 
+                      quickSuggestions: false,
+                      acceptSuggestionOnCommitCharacter: false,
+                      renderControlCharacters: false,
+                      dragAndDrop: true,
+                      cursorStyle: 'line',
+                      cursorWidth: 2
                     }}
                   />
                 ) : (
