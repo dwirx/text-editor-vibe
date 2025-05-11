@@ -122,6 +122,211 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });`;
 
+const DEFAULT_MARKDOWN = `# Markdown with LaTeX and Mermaid
+
+## LaTeX Math Equations
+
+Inline math: $E = mc^2$
+
+Block math:
+
+$$
+\\frac{d}{dx}\\left( \\int_{0}^{x} f(u)\\,du\\right)=f(x)
+$$
+
+More complex equation:
+
+$$
+\\begin{align}
+\\nabla \\times \\vec{\\mathbf{B}} -\\, \\frac1c\\, \\frac{\\partial\\vec{\\mathbf{E}}}{\\partial t} & = \\frac{4\\pi}{c}\\vec{\\mathbf{j}} \\\\
+\\nabla \\cdot \\vec{\\mathbf{E}} & = 4 \\pi \\rho \\\\
+\\nabla \\times \\vec{\\mathbf{E}}\\, +\\, \\frac1c\\, \\frac{\\partial\\vec{\\mathbf{B}}}{\\partial t} & = \\vec{\\mathbf{0}} \\\\
+\\nabla \\cdot \\vec{\\mathbf{B}} & = 0
+\\end{align}
+$$
+
+Matrix example:
+
+$$
+\\begin{pmatrix}
+a & b \\\\
+c & d
+\\end{pmatrix}
+$$
+
+## Mermaid Diagrams
+
+### Flowchart
+
+\`\`\`mermaid
+flowchart TD
+    A[Start] --> B{Is it?}
+    B -->|Yes| C[OK]
+    C --> D[Done]
+    B -->|No| E[Rework]
+    E --> B
+\`\`\`
+
+### Sequence Diagram
+
+\`\`\`mermaid
+sequenceDiagram
+    participant Alice
+    participant Bob
+    Alice->>John: Hello John, how are you?
+    loop Health check
+        John->>John: Fight against hypochondria
+    end
+    Note right of John: Rational thoughts <br/>prevail!
+    John-->>Alice: Great!
+    John->>Bob: How about you?
+    Bob-->>John: Jolly good!
+\`\`\`
+
+### Class Diagram
+
+\`\`\`mermaid
+classDiagram
+    class Animal {
+        +name: string
+        +eat(): void
+    }
+    class Dog {
+        +bark(): void
+    }
+    class Cat {
+        +meow(): void
+    }
+    Animal <|-- Dog
+    Animal <|-- Cat
+\`\`\`
+
+### Gantt Chart
+
+\`\`\`mermaid
+gantt
+    title A Gantt Diagram
+    dateFormat  YYYY-MM-DD
+    section Section
+    A task           :a1, 2023-01-01, 30d
+    Another task     :after a1, 20d
+    section Another
+    Task in sec      :2023-01-12, 12d
+    another task     :24d
+\`\`\`
+
+## Code Blocks with Syntax Highlighting
+
+### JavaScript
+
+\`\`\`javascript
+// JavaScript code with syntax highlighting
+function factorial(n) {
+  if (n === 0 || n === 1) {
+    return 1;
+  }
+  return n * factorial(n - 1);
+}
+
+// Arrow function example
+const sum = (a, b) => a + b;
+
+// Object example
+const person = {
+  name: 'John',
+  age: 30,
+  greet() {
+    console.log(\`Hello, my name is \${this.name}\`);
+  }
+};
+\`\`\`
+
+### Python
+
+\`\`\`python
+# Python code with syntax highlighting
+def fibonacci(n):
+    a, b = 0, 1
+    for _ in range(n):
+        yield a
+        a, b = b, a + b
+
+# Class example
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+    
+    def greet(self):
+        return f"Hello, my name is {self.name}"
+        
+# List comprehension
+squares = [x**2 for x in range(10)]
+\`\`\`
+
+### HTML and CSS
+
+\`\`\`html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .container {
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hello World</h1>
+    <p>This is a <strong>HTML</strong> example with embedded CSS.</p>
+  </div>
+</body>
+</html>
+\`\`\`
+
+## Formatting Examples
+
+**Bold Text**
+
+*Italic Text*
+
+~~Strikethrough~~
+
+- Bullet List
+- Items
+  - Nested Item
+
+1. Numbered List
+2. Items
+   1. Nested Item
+
+> Blockquote
+> Multiple lines
+
+[Link Text](https://example.com)
+
+![Image Alt Text](https://via.placeholder.com/150)
+
+---
+
+| Table | Header | Example |
+|-------|--------|---------|
+| Cell 1 | Cell 2 | Cell 3 |
+| More   | Data   | Here   |
+`;
+
 type FileType = 'html' | 'css' | 'js' | 'json' | 'txt' | 'md';
 
 interface FileItem {
@@ -350,6 +555,8 @@ export default function Home() {
         return generateJavaScriptPreview();
       case 'css':
         return generateCSSPreview();
+      case 'md':
+        return generateMarkdownPreview();
       default:
         return generateGenericPreview();
     }
@@ -633,6 +840,456 @@ export default function Home() {
             <button>Button</button>
           </div>
         </div>
+      </body>
+      </html>
+    `;
+  };
+
+  const generateMarkdownPreview = () => {
+    if (!activeFile || activeFile.type !== 'md') return '';
+    
+    // Escape backticks and template literals in content
+    const escapedContent = activeFile.content
+      .replace(/`/g, '\\`')
+      .replace(/\${/g, '\\${');
+    
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Markdown Preview: ${activeFile.name}</title>
+        
+        <!-- CSS libraries -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+        
+        <!-- External libraries from CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        
+        <!-- Custom Styling -->
+        <style>
+          body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            color: #333;
+          }
+          
+          .markdown-body {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          }
+          
+          pre {
+            background-color: #f6f8fa;
+            border-radius: 6px;
+            padding: 16px;
+            overflow: auto;
+            position: relative;
+          }
+          
+          pre code {
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
+            font-size: 0.9em;
+            tab-size: 2;
+          }
+          
+          blockquote {
+            padding: 0 1em;
+            color: #57606a;
+            border-left: 0.25em solid #d0d7de;
+            margin: 0 0 16px 0;
+          }
+          
+          table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 16px 0;
+          }
+          
+          table th, table td {
+            border: 1px solid #d0d7de;
+            padding: 6px 13px;
+          }
+          
+          table th {
+            background-color: #f6f8fa;
+          }
+          
+          .katex-block {
+            display: block;
+            margin: 1.5em 0;
+            text-align: center;
+            overflow-x: auto;
+          }
+          
+          .katex {
+            font-size: 1.1em;
+          }
+          
+          .katex-display {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 10px 0;
+            margin: 1.5em 0;
+          }
+          
+          .katex-display > .katex {
+            max-width: 100%;
+            display: block;
+            text-align: center;
+          }
+          
+          img {
+            max-width: 100%;
+            height: auto;
+          }
+          
+          hr {
+            height: 0.25em;
+            padding: 0;
+            margin: 24px 0;
+            background-color: #d0d7de;
+            border: 0;
+          }
+          
+          h1, h2, h3, h4, h5, h6 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            line-height: 1.25;
+          }
+          
+          h1 {
+            font-size: 2em;
+            border-bottom: 1px solid #d0d7de;
+            padding-bottom: 0.3em;
+          }
+          
+          h2 {
+            font-size: 1.5em;
+            border-bottom: 1px solid #d0d7de;
+            padding-bottom: 0.3em;
+          }
+          
+          h3 {
+            font-size: 1.25em;
+          }
+          
+          h4 {
+            font-size: 1em;
+          }
+          
+          h5 {
+            font-size: 0.875em;
+          }
+          
+          h6 {
+            font-size: 0.85em;
+            color: #57606a;
+          }
+          
+          .copy-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 4px 8px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+          }
+          
+          pre:hover .copy-button {
+            opacity: 1;
+          }
+          
+          .copy-button:hover {
+            background-color: #e0e0e0;
+          }
+          
+          .mermaid {
+            text-align: center;
+            margin: 1em 0;
+          }
+          
+          .error {
+            color: red;
+            padding: 10px;
+            border: 1px solid red;
+            border-radius: 4px;
+            background-color: #fff0f0;
+          }
+          
+          .latex-source {
+            display: none;
+          }
+          
+          /* Dark mode support */
+          @media (prefers-color-scheme: dark) {
+            body {
+              background-color: #0d1117;
+              color: #c9d1d9;
+            }
+            
+            .markdown-body {
+              background-color: #0d1117;
+              color: #c9d1d9;
+            }
+            
+            pre {
+              background-color: #161b22;
+            }
+            
+            blockquote {
+              color: #8b949e;
+              border-left-color: #30363d;
+            }
+            
+            table th, table td {
+              border-color: #30363d;
+            }
+            
+            table th {
+              background-color: #161b22;
+            }
+            
+            h1, h2 {
+              border-bottom-color: #30363d;
+            }
+            
+            .copy-button {
+              background-color: #1f2937;
+              border-color: #374151;
+              color: #e5e7eb;
+            }
+            
+            .copy-button:hover {
+              background-color: #374151;
+            }
+            
+            .error {
+              background-color: #301a1a;
+            }
+          }
+        </style>
+        
+        <script>
+          // Console capture for debugging
+          const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn,
+            info: console.info
+          };
+          
+          function sendToParent(type, content) {
+            try {
+              window.parent.postMessage({
+                type: 'console',
+                logType: type,
+                content: typeof content === 'object' ? JSON.stringify(content, null, 2) : String(content)
+              }, '*');
+            } catch (e) {
+              window.parent.postMessage({
+                type: 'console',
+                logType: type,
+                content: String(content)
+              }, '*');
+            }
+          }
+          
+          console.log = function(...args) {
+            originalConsole.log.apply(console, args);
+            args.forEach(arg => sendToParent('log', arg));
+          };
+          
+          console.error = function(...args) {
+            originalConsole.error.apply(console, args);
+            args.forEach(arg => sendToParent('error', arg));
+          };
+          
+          console.warn = function(...args) {
+            originalConsole.warn.apply(console, args);
+            args.forEach(arg => sendToParent('warn', arg));
+          };
+          
+          console.info = function(...args) {
+            originalConsole.info.apply(console, args);
+            args.forEach(arg => sendToParent('info', arg));
+          };
+          
+          window.addEventListener('error', function(event) {
+            sendToParent('error', event.message + ' at ' + event.lineno + ':' + event.colno);
+            return false;
+          });
+          
+          // Function to add copy buttons to code blocks
+          function addCopyButtons() {
+            document.querySelectorAll('pre code').forEach((codeBlock) => {
+              const container = codeBlock.parentNode;
+              const copyButton = document.createElement('button');
+              copyButton.className = 'copy-button';
+              copyButton.textContent = 'Copy';
+              
+              copyButton.addEventListener('click', () => {
+                navigator.clipboard.writeText(codeBlock.textContent).then(() => {
+                  copyButton.textContent = 'Copied!';
+                  setTimeout(() => {
+                    copyButton.textContent = 'Copy';
+                  }, 2000);
+                }).catch(err => {
+                  console.error('Failed to copy text: ', err);
+                  copyButton.textContent = 'Error';
+                  setTimeout(() => {
+                    copyButton.textContent = 'Copy';
+                  }, 2000);
+                });
+              });
+              
+              container.style.position = 'relative';
+              container.prepend(copyButton);
+            });
+          }
+        </script>
+      </head>
+      <body>
+        <div class="markdown-body" id="content"></div>
+        
+        <script>
+          // Wait for page to load
+          document.addEventListener('DOMContentLoaded', function() {
+            try {
+              console.log('Starting Markdown rendering');
+              
+              // Initialize Mermaid
+              mermaid.initialize({ 
+                startOnLoad: false,
+                theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default',
+                securityLevel: 'loose',
+                fontFamily: 'monospace',
+                htmlLabels: true
+              });
+              
+              // Process LaTeX and Mermaid
+              const markdownContent = \`${escapedContent}\`;
+              
+              // Setup custom renderer
+              const renderer = new marked.Renderer();
+              
+              // Handle code blocks (for syntax highlighting and mermaid)
+              renderer.code = function(code, language) {
+                if (language === 'mermaid') {
+                  const id = 'mermaid-' + Math.random().toString(36).substring(2, 9);
+                  return '<div class="mermaid" id="' + id + '">' + code + '</div>';
+                }
+                
+                // Regular code with syntax highlighting
+                const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
+                const highlightedCode = hljs.highlight(code, { language: validLanguage }).value;
+                return '<pre><code class="hljs language-' + validLanguage + '">' + highlightedCode + '</code></pre>';
+              };
+              
+              // Create simple LaTeX handler for inline and block math
+              const latexRegex = {
+                block: /\\$\\$(.*?)\\$\\$/gs,  // global and multiline
+                inline: /\\$(.*?)\\$/g  // global
+              };
+              
+              // Preprocess markdown to handle LaTeX
+              let processedMarkdown = markdownContent;
+              
+              // First, handle block LaTeX
+              processedMarkdown = processedMarkdown.replace(latexRegex.block, function(match, latex) {
+                const id = 'latex-block-' + Math.random().toString(36).substring(2, 9);
+                return '\\n<div id="' + id + '" class="latex-block" data-latex="' + encodeURIComponent(latex) + '"></div>\\n';
+              });
+              
+              // Then, handle inline LaTeX
+              processedMarkdown = processedMarkdown.replace(latexRegex.inline, function(match, latex) {
+                const id = 'latex-inline-' + Math.random().toString(36).substring(2, 9);
+                return '<span id="' + id + '" class="latex-inline" data-latex="' + encodeURIComponent(latex) + '"></span>';
+              });
+              
+              // Render the processed markdown
+              document.getElementById('content').innerHTML = marked.parse(processedMarkdown, {
+                renderer: renderer,
+                breaks: true,
+                gfm: true
+              });
+              
+              // Add copy buttons to code blocks
+              addCopyButtons();
+              
+              // Render LaTeX blocks
+              document.querySelectorAll('.latex-block').forEach(function(element) {
+                try {
+                  const latex = decodeURIComponent(element.getAttribute('data-latex'));
+                  console.log('Rendering LaTeX block:', latex);
+                  katex.render(latex, element, {
+                    displayMode: true,
+                    throwOnError: false,
+                    output: 'html',
+                    trust: true
+                  });
+                } catch (error) {
+                  console.error('Error rendering LaTeX block:', error);
+                  element.innerHTML = '<div class="error">LaTeX Error: ' + error.message + '</div>';
+                }
+              });
+              
+              // Render LaTeX inline elements
+              document.querySelectorAll('.latex-inline').forEach(function(element) {
+                try {
+                  const latex = decodeURIComponent(element.getAttribute('data-latex'));
+                  console.log('Rendering LaTeX inline:', latex);
+                  katex.render(latex, element, {
+                    displayMode: false,
+                    throwOnError: false,
+                    output: 'html'
+                  });
+                } catch (error) {
+                  console.error('Error rendering LaTeX inline:', error);
+                  element.innerHTML = '<span class="error">[LaTeX Error]</span>';
+                }
+              });
+              
+              // Render mermaid diagrams
+              try {
+                console.log('Rendering Mermaid diagrams');
+                mermaid.init(undefined, document.querySelectorAll('.mermaid'))
+                  .then(() => {
+                    console.log('Mermaid diagrams rendered successfully');
+                  })
+                  .catch(err => {
+                    console.error('Error initializing mermaid:', err);
+                    document.querySelectorAll('.mermaid').forEach(element => {
+                      element.innerHTML = '<div class="error">Error rendering diagram: ' + err.message + '</div>';
+                    });
+                  });
+              } catch (err) {
+                console.error('Error with mermaid:', err);
+              }
+              
+              console.log('Markdown rendering complete');
+            } catch (error) {
+              console.error('General error:', error);
+              document.getElementById('content').innerHTML = '<div class="error">Error processing content: ' + error.message + '</div>';
+            }
+          });
+        </script>
       </body>
       </html>
     `;
@@ -1123,7 +1780,7 @@ export default function Home() {
       const { folders: subFolders, files: subFiles } = getChildrenOfFolder(item.id);
       const isDropTarget = dragOverFolderId === item.id;
       
-      return (
+  return (
         <ContextMenu>
           <ContextMenuTrigger>
             <div className="select-none">
@@ -1433,7 +2090,7 @@ export default function Home() {
             className="hidden"
             accept=".html,.htm,.css,.js,.json,.txt,.md"
           />
-          <div className="flex gap-1">
+          <div className="flex gap-1 mb-2">
             <Button 
               variant="outline" 
               size="sm" 
@@ -1461,6 +2118,15 @@ export default function Home() {
               New Folder
             </Button>
           </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full text-xs"
+            onClick={createMarkdownExample}
+          >
+            <Code className="h-3 w-3 mr-1" />
+            Create Markdown Example
+          </Button>
         </div>
         
         <Separator className="my-2" />
@@ -1537,6 +2203,21 @@ export default function Home() {
     }
   };
 
+  // Create a markdown example to demonstrate features
+  const createMarkdownExample = () => {
+    const newFileId = generateId();
+    const newFile = {
+      id: newFileId,
+      name: 'example.md',
+      type: 'md' as FileType,
+      content: DEFAULT_MARKDOWN,
+      parentId: null
+    };
+    
+    setFiles(prev => [...prev, newFile]);
+    setActiveFileId(newFileId);
+  };
+
   // Add a function to create a simple HTML template for new HTML files
   const getDefaultContentForNewFile = (fileType: FileType, fileName: string): string => {
     switch (fileType) {
@@ -1557,6 +2238,8 @@ export default function Home() {
         return DEFAULT_CSS;
       case 'js':
         return DEFAULT_JS;
+      case 'md':
+        return DEFAULT_MARKDOWN;
       default:
         return '';
     }
@@ -1989,7 +2672,7 @@ export default function Home() {
                         <FilePlus className="h-4 w-4 mr-2" />
                         Create New File
                       </Button>
-                    </div>
+        </div>
                   </div>
                 )}
               </div>
@@ -2245,7 +2928,7 @@ export default function Home() {
                       sandbox="allow-scripts"
                       ref={previewRef}
                     />
-                  </div>
+    </div>
                 </div>
               </div>
             </ResizablePanel>
@@ -2294,10 +2977,11 @@ export default function Home() {
                 </Label>
                 <div className="col-span-3">
                   <Tabs defaultValue="html" className="w-full" onValueChange={(v) => setNewFileType(v as FileType)}>
-                    <TabsList className="grid w-full grid-cols-3">
+                    <TabsList className="grid w-full grid-cols-4">
                       <TabsTrigger value="html">HTML</TabsTrigger>
                       <TabsTrigger value="css">CSS</TabsTrigger>
                       <TabsTrigger value="js">JS</TabsTrigger>
+                      <TabsTrigger value="md">MD</TabsTrigger>
                     </TabsList>
                   </Tabs>
                 </div>
@@ -2491,4 +3175,4 @@ export default function Home() {
       </div>
     </main>
   );
-} 
+}
