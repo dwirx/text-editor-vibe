@@ -392,7 +392,7 @@ export default function Home() {
   const [autoUpdate, setAutoUpdate] = useState(true);
   const [dataLoaded, setDataLoaded] = useState(false);
   const { theme } = useTheme();
-  const editorRef = useRef(null);
+  const editorRef = useRef<any>(null);
   const previewRef = useRef<HTMLIFrameElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showDevTools, setShowDevTools] = useState(false);
@@ -527,8 +527,8 @@ export default function Home() {
 
   const activeFile = files.find(file => file.id === activeFileId);
 
-  const updateFileContent = (content: string) => {
-    if (activeFileId) {
+  const updateFileContent = (content: string | undefined) => {
+    if (activeFileId && content !== undefined) {
       setFiles(prev => prev.map(file => 
         file.id === activeFileId ? { ...file, content } : file
       ));
@@ -1395,8 +1395,10 @@ export default function Home() {
 
   const openInNewTab = () => {
     const newWindow = window.open('', '_blank');
-    newWindow.document.write(preview);
-    newWindow.document.close();
+    if (newWindow) {
+      newWindow.document.write(preview);
+      newWindow.document.close();
+    }
   };
 
   const toggleFullscreen = () => {
@@ -1524,7 +1526,7 @@ export default function Home() {
     if (isFolder) {
       if (confirm("Delete this folder and all its contents?")) {
         const foldersToDelete = [id];
-        const filesToDelete = [];
+        const filesToDelete: string[] = [];
         
         const findSubFolders = (parentId: string) => {
           folders.forEach(folder => {
@@ -1538,7 +1540,7 @@ export default function Home() {
         findSubFolders(id);
         
         files.forEach(file => {
-          if (foldersToDelete.includes(file.parentId)) {
+          if (file.parentId && foldersToDelete.includes(file.parentId)) {
             filesToDelete.push(file.id);
           }
         });
@@ -1614,7 +1616,7 @@ export default function Home() {
     reader.onload = (event) => {
       const content = event.target?.result as string;
       const fileName = uploadedFile.name;
-      const fileExtension = fileName.split('.').pop().toLowerCase();
+      const fileExtension = fileName.split('.').pop()?.toLowerCase() || 'txt';
       
       let fileType: FileType = 'txt';
       
@@ -2400,7 +2402,7 @@ setTimeout(() => {
   );
   const [terminalOutput, setTerminalOutput] = useState<Array<{type: string, content: string}>>([]);
   const [isRunning, setIsRunning] = useState(false);
-  const playgroundEditorRef = useRef(null);
+  const playgroundEditorRef = useRef<any>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
 
   const runJsPlayground = () => {
@@ -2493,7 +2495,7 @@ setTimeout(() => {
     } catch (error) {
       setTerminalOutput(prev => [...prev, { 
         type: 'error', 
-        content: `Compilation error: ${error.message}` 
+        content: `Compilation error: ${error instanceof Error ? error.message : String(error)}` 
       }]);
     } finally {
       setIsRunning(false);
@@ -2561,7 +2563,7 @@ setTimeout(() => {
                 height="100%"
                 language="javascript"
                 value={playgroundCode}
-                onChange={setPlaygroundCode}
+                onChange={(value) => value !== undefined && setPlaygroundCode(value)}
                 theme={theme === 'dark' ? 'vs-dark' : 'light'}
                 onMount={(editor) => playgroundEditorRef.current = editor}
                 options={{
